@@ -1,0 +1,161 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Embedded Device Health Monitor</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+    margin:0;
+    padding:30px;
+    font-family:Arial,sans-serif;
+    background:#101827;
+    color:white;
+}
+.container{max-width:850px;margin:auto}
+h1{color:#38bdf8}
+.panel{
+    background:#1e293b;
+    padding:25px;
+    border-radius:15px;
+    margin-top:20px;
+}
+input{
+    display:block;
+    width:100%;
+    padding:13px;
+    margin:10px 0 18px;
+    border:1px solid #475569;
+    border-radius:7px;
+    background:#0f172a;
+    color:white;
+}
+button{
+    padding:13px 22px;
+    background:#0284c7;
+    border:0;
+    border-radius:7px;
+    color:white;
+    cursor:pointer;
+}
+.cards{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:15px;
+}
+.card{
+    background:#334155;
+    padding:20px;
+    border-radius:10px;
+}
+.value{font-size:24px;color:#38bdf8}
+#status{font-size:25px;font-weight:bold}
+@media(max-width:600px){
+    .cards{grid-template-columns:1fr}
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<h1>Embedded Device Health Monitoring</h1>
+<p>Monitor voltage, temperature and current.</p>
+
+<div class="panel">
+<h2>Device Input</h2>
+
+<label>Device ID</label>
+<input id="device" placeholder="DEV-01">
+
+<label>Voltage (V)</label>
+<input id="voltage" type="number" step="any" placeholder="5.0">
+
+<label>Temperature (°C)</label>
+<input id="temperature" type="number" step="any" placeholder="35">
+
+<label>Current (A)</label>
+<input id="current" type="number" step="any" placeholder="1.0">
+
+<button onclick="checkDevice()">Check Device Health</button>
+</div>
+
+<div class="panel">
+<h2>Monitoring Results</h2>
+
+<div class="cards">
+<div class="card">
+Voltage
+<div class="value" id="v">--</div>
+</div>
+<div class="card">
+Temperature
+<div class="value" id="t">--</div>
+</div>
+<div class="card">
+Current
+<div class="value" id="c">--</div>
+</div>
+</div>
+
+<h3>Device Status</h3>
+<div id="status">Waiting for input...</div>
+<p id="message"></p>
+
+</div>
+</div>
+
+<script>
+function checkDevice(){
+
+    const id = document.getElementById("device").value.trim();
+    const voltageInput = document.getElementById("voltage").value;
+    const temperatureInput = document.getElementById("temperature").value;
+    const currentInput = document.getElementById("current").value;
+
+    if(!id || voltageInput === "" ||
+       temperatureInput === "" || currentInput === ""){
+        alert("Please enter all device details!");
+        return;
+    }
+
+    const voltage = Number(voltageInput);
+    const temperature = Number(temperatureInput);
+    const current = Number(currentInput);
+
+    if(!Number.isFinite(voltage) ||
+       !Number.isFinite(temperature) ||
+       !Number.isFinite(current) ||
+       voltage < 0 || temperature < 0 || current < 0){
+        alert("Enter valid non-negative values!");
+        return;
+    }
+
+    let health;
+
+    if(voltage < 3.0 || voltage > 5.5 ||
+       temperature > 70 || current > 2.0){
+        health = "CRITICAL";
+    }
+    else if(voltage < 3.3 || voltage > 5.2 ||
+            temperature > 50 || current > 1.5){
+        health = "WARNING";
+    }
+    else{
+        health = "HEALTHY";
+    }
+
+    document.getElementById("v").textContent = voltage + " V";
+    document.getElementById("t").textContent = temperature + " °C";
+    document.getElementById("c").textContent = current + " A";
+
+    document.getElementById("status").textContent = health;
+    document.getElementById("message").textContent =
+        "Device ID: " + id;
+}
+</script>
+</body>
+</html>
